@@ -51,7 +51,27 @@ def send_message(host: str, queue_name: str, message: str):
     finally:
         # close the connection to the server
         conn.close()
+#Declare a host name
+host="localhost"
+#Set Queueclear to true to clear the Queue
+Queueclear=True
+def offer_Queueclear(Queueclear):
+    """Offer to open the RabbitMQ Admin website"""
+    if Queueclear==True:
+        ans = input("Would you like to clear the queues? y or n ")
+        print()
+        if ans.lower() == "y":
+            # create a blocking connection to the RabbitMQ server
+            conn = pika.BlockingConnection(pika.ConnectionParameters(host))
+            # use the connection to create a communication channel
+            ch = conn.channel()
+            #delete the queues
+            ch.queue_delete("01-smoker")
+            ch.queue_delete("02-food-A")
+            ch.queue_delete("03-food-B")
+            print("Queue cleared!")
 
+offer_Queueclear(Queueclear)
 """ Create csv function to read from file and turn it into a message"""
 #opens smoker File
 with open("smoker-temps.csv",'r') as file:
@@ -70,15 +90,10 @@ with open("smoker-temps.csv",'r') as file:
         smoker_message=f"{fstringtime},{smokertemp}"
         foodA_message=f"{fstringtime},{foodA}"
         foodB_message=f"{fstringtime},{foodB}"
-        #Declare a host name
-        host="localhost"
         #Get those messages rolling out!
         send_message(host,"01-smoker",smoker_message)
         send_message(host,"02-food-A",foodA_message)
         send_message(host,"03-food-B",foodB_message)
         #Slow down the output to one message every 30 seconds
         time.sleep(30)
-
-
-
 
