@@ -7,6 +7,9 @@ import sys
 import time
 from collections import deque
 
+#Declare Deque
+smoker_deque = deque(maxlen=5)  # limited to 5 items (the 5 most recent readings)
+
 # define a callback function to be called when a message is received
 def callback(ch, method, properties, body):
     """ Define behavior on getting a message."""
@@ -19,7 +22,27 @@ def callback(ch, method, properties, body):
     # acknowledge the message was received and processed 
     # (now it can be deleted from the queue)
     ch.basic_ack(delivery_tag=method.delivery_tag)
-
+    #function used to sort out smoker deque
+    reading_no_split=body.decode()
+    #Split reading by comma
+    reading_split=reading_no_split.split(",")
+    reading=reading_split[1][:-1]
+    #convert empty string to float 0
+    if reading == "" :
+        reading=0
+    #append reading to deque
+    smoker_deque.append(float(reading))
+    #Create an empty list that only keeps true readings
+    true_readings=[]
+    #add true readings to list
+    for x in smoker_deque:
+        if x>0:
+            true_readings.append(x)
+    #Check to see if the list has anything in it, if so subtract the smallest and largest object from each other and check to see the order of the readings.
+    #We are interested to see if the temp is dropping not rising
+    if true_readings!=[]:
+        if max(true_readings)-min(true_readings)>15 and true_readings.index(max(true_readings)< true_readings.index(min(true_readings))):
+            print("Warning smoker Temp dropping")
 
 # define a main function to run the program
 def main(hn: str = "localhost", qn: str = "task_queue"):
@@ -70,9 +93,7 @@ def main(hn: str = "localhost", qn: str = "task_queue"):
 
         # start consuming messages via the communication channel
         channel.start_consuming()
-        smoker_deque = deque(maxlen=5)  # limited to 5 items (the 5 most recent readings)
-        if max(smoker_deque)-min(smoker_deque)>15:
-            print("Warning smoker Temp dropping")
+
     # except, in the event of an error OR user stops the process, do this
     except Exception as e:
         print()
