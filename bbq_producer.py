@@ -72,6 +72,7 @@ def offer_Queueclear(Queueclear):
             print("Queue cleared!")
 
 offer_Queueclear(Queueclear)
+offer_rabbitmq_admin_site(True)
 """ Create csv function to read from file and turn it into a message"""
 #opens smoker File
 with open("smoker-temps.csv",'r') as file:

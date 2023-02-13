@@ -21,3 +21,19 @@ if you set show_offer to true it will bring up rabbitmq admin page. It is curren
 Notice in my screenshot below I used a 1 second timer just for testing. I changed it to 30 seconds after I got my screenshot!
 Screenshot!
 ![Davlin working messages!](Screenshot.JPG)
+
+#Module 6 additions!
+in Module 6 Three listners are added for each Queue.
+To run the code open 4 python terminals
+Locate where your file is downloaded and change the directory using cd
+Once there type the python followed by the py file you would like to run for example:
+```
+python bbq_listen_smoker.py
+```
+This will start the program!
+
+Here is an example with 4 open terminals
+![Davlin 4 Terminals](Screenshot2.JPG)
+
+Here is another screen shot of the RabbitMQ admin page. I did find it interesting my old Queues seem to still be on the admin page. I may need to clean up the queues later.
+![Davlin RabbitMq admin page](Screenshot3.JPG)
