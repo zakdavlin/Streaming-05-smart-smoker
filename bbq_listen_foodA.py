@@ -4,16 +4,27 @@
 import pika
 import sys
 import time
-
+from collections import deque
+foodA_deque = deque(maxlen=20)  # limited to 20 items (the 20 most recent readings)
 # define a callback function to be called when a message is received
 def callback(ch, method, properties, body):
     """ Define behavior on getting a message."""
     # decode the binary message body to a string
     print(f" [x] Received {body.decode()}")
-    # simulate work by sleeping for the number of dots in the message
-    time.sleep(body.count(b"."))
-    # when done with task, tell the user
-    print(" [x] Done.")
+    #Create function to alert if food is stalling
+    reading_stringfood=body.decode()
+    #Split temp from string
+    tempA=reading_stringfood.split(",")
+    if tempA[1][:-1]!="":
+        #Add to deque only the second temp reading
+        foodA_deque.append(float(tempA[1][:-1]))
+    #check to see if deque is not empty and to see if the temp has increased by 15
+    if len(foodA_deque)==20 and max(foodA_deque)-min(foodA_deque)<1 :
+        print("FoodA is Stalling")
+
+
+
+
     # acknowledge the message was received and processed 
     # (now it can be deleted from the queue)
     ch.basic_ack(delivery_tag=method.delivery_tag)

@@ -15,34 +15,20 @@ def callback(ch, method, properties, body):
     """ Define behavior on getting a message."""
     # decode the binary message body to a string
     print(f" [x] Received {body.decode()}")
-    # simulate work by sleeping for the number of dots in the message
-    time.sleep(body.count(b"."))
-    # when done with task, tell the user
-    print(" [x] Done.")
+    #function used to sort out smoker deque
+    #create string for body
+    reading_string=body.decode()
+    #Split temp from string
+    temp=reading_string.split(",")[1]
+    #Add to deque
+    smoker_deque.append(float(temp))
+    #check to see if deque is not empty and to see if the temp has increased by 15
+    if smoker_deque and max(smoker_deque)-min(smoker_deque)>=15:
+        print("smoker has increased by 15 degrees or more!")
     # acknowledge the message was received and processed 
     # (now it can be deleted from the queue)
     ch.basic_ack(delivery_tag=method.delivery_tag)
-    #function used to sort out smoker deque
-    reading_no_split=body.decode()
-    #Split reading by comma
-    reading_split=reading_no_split.split(",")
-    reading=reading_split[1][:-1]
-    #convert empty string to float 0
-    if reading == "" :
-        reading=0
-    #append reading to deque
-    smoker_deque.append(float(reading))
-    #Create an empty list that only keeps true readings
-    true_readings=[]
-    #add true readings to list
-    for x in smoker_deque:
-        if x>0:
-            true_readings.append(x)
-    #Check to see if the list has anything in it, if so subtract the smallest and largest object from each other and check to see the order of the readings.
-    #We are interested to see if the temp is dropping not rising
-    if true_readings!=[]:
-        if max(true_readings)-min(true_readings)>15 and true_readings.index(max(true_readings)< true_readings.index(min(true_readings))):
-            print("Warning smoker Temp dropping")
+    
 
 # define a main function to run the program
 def main(hn: str = "localhost", qn: str = "task_queue"):
