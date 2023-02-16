@@ -16,14 +16,16 @@ def callback(ch, method, properties, body):
     #Create function to alert if food is stalling
     reading_stringfood=body.decode()
     #Split temp from string
-    tempB=reading_stringfood.split(",")
-    if tempB[1][:-1]!="":
-        #Add to deque only the second temp reading
-        foodB_deque.append(float(tempB[1][:-1]))
-    #check to see if deque is not empty and to see if the temp has increased by 15
-    if len(foodB_deque)==20 and max(foodB_deque)-min(foodB_deque)<1 :
-        print("FoodA is Stalling")
-    
+    try:
+        tempB=reading_stringfood.split(",")
+        if tempB[-1]!="":
+            #Add to deque only the third temp reading
+            foodB_deque.append(float(tempB[-1]))
+        #check to see if deque is not empty and to see if the temp has increased by 15
+        if len(foodB_deque)==20 and max(foodB_deque)-min(foodB_deque)<1 :
+            print("FoodA is Stalling")
+    except ValueError:
+        pass
     # acknowledge the message was received and processed 
     # (now it can be deleted from the queue)
     ch.basic_ack(delivery_tag=method.delivery_tag)

@@ -19,14 +19,17 @@ def callback(ch, method, properties, body):
     #create string for body
     reading_string=body.decode()
     #Split temp from string
-    temp=reading_string.split(",")[1]
-    #Add to deque
-    smoker_deque.append(float(temp))
-    #check to see if deque is not empty and to see if the temp has increased by 15
-    if smoker_deque and max(smoker_deque)-min(smoker_deque)>=15:
-        print("smoker has increased by 15 degrees or more!")
-    # acknowledge the message was received and processed 
-    # (now it can be deleted from the queue)
+    try:
+        temp=reading_string.split(",")[1]
+        #Add to deque
+        smoker_deque.append(float(temp))
+        #check to see if deque is not empty and to see if the temp has increased by 15
+        if smoker_deque and max(smoker_deque)-min(smoker_deque)>=15:
+            print("smoker has decreased by 15 degrees or more!")
+        # acknowledge the message was received and processed 
+        # (now it can be deleted from the queue)
+    except ValueError:
+        pass
     ch.basic_ack(delivery_tag=method.delivery_tag)
     
 
